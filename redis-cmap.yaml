@@ -1,0 +1,11 @@
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: example-redis-config
+  namespace: ns-redis
+data:
+  redis-config: |
+    maxmemory 4mb
+    maxmemory-policy allkeys-lru
+---

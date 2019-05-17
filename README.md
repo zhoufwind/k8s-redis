@@ -4,38 +4,20 @@
 ## 快速部署redis
 
 ```bash
-# kubectl apply -f redis-ns.yaml 
-namespace/ns-redis created
+kubectl apply -f redis-ns.yaml 
 
-# kubectl create configmap example-redis-config --namespace=ns-redis --from-file=redis-config 
-configmap/example-redis-config created
+# Create configmap method A:
+kubectl create configmap example-redis-config --namespace=ns-redis --from-file=redis-config 
 
-# kubectl apply -f redis-pod.yaml 
-pod/redis created
+# Create configmap method B:
+kubectl apply -f redis-cmap.yaml
 
-# kubectl apply -f redis-svc.yaml
+kubectl apply -f redis-pod.yaml 
 
-# kubectl -n ns-redis get configmap example-redis-config -oyaml
-apiVersion: v1
-data:
-  redis-config: |
-    maxmemory 2mb
-    maxmemory-policy allkeys-lru
-kind: ConfigMap
-metadata:
-  creationTimestamp: "2019-05-16T10:20:44Z"
-  name: example-redis-config
-  namespace: ns-redis
-  resourceVersion: "4238219"
-  selfLink: /api/v1/namespaces/ns-redis/configmaps/example-redis-config
-  uid: 4397b749-77c4-11e9-989c-5255000115c0
+kubectl apply -f redis-svc.yaml
 
-# kubectl -n ns-redis get all -owide
-NAME        READY   STATUS    RESTARTS   AGE   IP                NODE             NOMINATED NODE   READINESS GATES
-pod/redis   1/1     Running   0          40s   192.152.203.142   192.168.35.151   <none>           <none>
-
-NAME            TYPE       CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE   SELECTOR
-service/redis   NodePort   192.153.39.61   <none>        6379:26379/TCP   9s    app=redis
+kubectl -n ns-redis get configmap example-redis-config -oyaml
+kubectl -n ns-redis get all -owide
 ```
 
 ## 快速验证redis服务
@@ -46,7 +28,7 @@ service/redis   NodePort   192.153.39.61   <none>        6379:26379/TCP   9s    
 # kubectl -n ns-redis exec -it redis redis-cli
 127.0.0.1:6379> CONFIG GET maxmemory
 1) "maxmemory"
-2) "2097152"
+2) "4194304"
 127.0.0.1:6379> CONFIG GET maxmemory-policy
 1) "maxmemory-policy"
 2) "allkeys-lru"
@@ -79,5 +61,6 @@ b'bar'
 ## 参考文档
 
 - [Configuring Redis using a ConfigMap](https://kubernetes.io/docs/tutorials/configuration/configure-redis-using-configmap/)
+- [Configure a Pod to Use a ConfigMap](https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/)
 - [DockerHub - Redis](https://hub.docker.com/_/redis?tab=description)
 - [REDIS WITH PYTHON - 2018](https://www.bogotobogo.com/python/python_redis_with_python.php)
